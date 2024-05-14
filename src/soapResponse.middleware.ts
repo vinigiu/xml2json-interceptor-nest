@@ -1,20 +1,17 @@
 import { HttpService } from '@nestjs/axios';
 import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
   HttpException,
   Inject,
+  Injectable,
+  NestMiddleware,
 } from '@nestjs/common';
+import { NextFunction } from 'express';
 import { lastValueFrom } from 'rxjs';
-// import { map } from 'rxjs/operators';
 import { parseString } from 'xml2js';
 
 @Injectable()
-export class SoapResponseInterceptor implements NestInterceptor {
+export class SoapResponseMiddleware implements NestMiddleware {
   private url: string;
-
   constructor(
     private readonly httpService: HttpService,
     @Inject('SOAP_URL') url: string,
@@ -22,14 +19,12 @@ export class SoapResponseInterceptor implements NestInterceptor {
     this.url = url;
   }
 
-  async intercept(context: ExecutionContext, next: CallHandler) {
-    const request = context.switchToHttp().getRequest();
-
+  async use(request: Request, response: Response, next: NextFunction) {
     const soapData = await this.getSoapData(this.url);
     const soapDataConvertedToJson = await this.convertXmlToJson(soapData);
 
     request['treatedJson'] = JSON.stringify(soapDataConvertedToJson);
-    return next.handle();
+    next();
   }
 
   private convertXmlToJson(xmlString: string) {

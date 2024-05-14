@@ -1,13 +1,13 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+// import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class AppService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(@Inject(REQUEST) private readonly request: Request) {}
 
   async getContratos(): Promise<any> {
-    const url = 'https://soaptojson.free.beeceptor.com/stocks';
-    const response = this.httpService.post(url);
-    return response;
+    const dado = JSON.parse(this.request['treatedJson']);
+    return dado;
   }
 }

@@ -1,11 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get /*, Inject , UseInterceptors */,
+} from '@nestjs/common';
 import { AppService } from './app.service';
+// import { SoapResponseInterceptor } from './soapResponse.interceptor';
+// import { HttpService } from '@nestjs/axios';
+// import { HttpService } from '@nestjs/axios';
+// import { HttpService } from '@nestjs/axios';
 
-@Controller()
+@Controller('root')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    // @Inject('SOAP_URL') private readonly soapUrl: string,
+  ) {}
 
-  @Get()
+  // @UseInterceptors(new SoapResponseInterceptor(new HttpService(), this.soapUrl))
+  @Get('contratos')
   async getContratos(): Promise<any> {
     return this.appService.getContratos();
   }
